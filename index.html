@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#173f2a">
+
+<title>Fairway Simple</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f3f6f3;
+  color: #17231b;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+header {
+  background: #173f2a;
+  color: white;
+  padding: 22px 18px;
+}
+
+header h1 {
+  margin: 5px 0 0;
+  font-size: 27px;
+}
+
+header small {
+  opacity: .75;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+nav {
+  display: flex;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+nav button {
+  flex: 1;
+  border: 0;
+  background: white;
+  padding: 14px 5px;
+  font-weight: bold;
+  color: #68736b;
+}
+
+nav button.active {
+  color: #173f2a;
+  border-bottom: 3px solid #173f2a;
+}
+
+.page {
+  display: none;
+  max-width: 700px;
+  margin: auto;
+  padding: 16px;
+}
+
+.page.active {
+  display: block;
+}
+
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 15px rgba(0,0,0,.05);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border: 1px solid #ccd5ce;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.course {
+  display: flex;
+  gap: 10px;
+}
+
+.course label:first-child {
+  flex: 1;
+}
+
+.course label:last-child {
+  width: 90px;
+}
+
+#holes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.hole {
+  background: #f5f8f5;
+  padding: 9px;
+  border-radius: 10px;
+}
+
+.hole span {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.hole input {
+  padding: 8px;
+}
+
+.total {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 0;
+}
+
+.total strong {
+  font-size: 30px;
+}
+
+.primary {
+  width: 100%;
+  padding: 14px;
+  background: #173f2a;
+  color: white;
+  border: 0;
+  border-radius: 11px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat {
+  background: white;
+  border-radius: 15px;
+  padding: 16px;
+}
+
+.stat span {
+  color: #68736b;
+  font-size: 12px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 25px;
+  margin-top: 5px;
+}
+
+.deal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-top: 1px solid #eee;
+}
+
+.deal a {
+  background: #173f2a;
+  color: white;
+  padding: 9px 12px;
+  border-radius: 9px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.result {
+  margin-top: 15px;
+  padding: 14px;
+  background: #edf5ef;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.ad {
+  margin-top: 20px;
+  border: 1px dashed #aaa;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+  color: #777;
+  font-size: 12px;
+}
+
+footer {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+  font-size: 11px;
+}
+
+@media (min-width: 600px) {
+  #holes {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <small>GOLF MADE SIMPLE</small>
+  <h1>Fairway Simple ⛳</h1>
+</header>
+
+<nav>
+  <button class="active" onclick="showPage('scorecard',this)">Scorecard</button>
+  <button onclick="showPage('calculator',this)">Calculator</button>
+  <button onclick="showPage('stats',this)">Stats</button>
+  <button onclick="showPage('deals',this)">Deals</button>
+</nav>
+
+<section id="scorecard" class="page active">
+
+<div class="card">
+
+<h2>My Round</h2>
+
+<div class="course">
+<label>
+Course
+<input id="course" placeholder="Golf course">
+</label>
+
+<label>
+Par
+<input id="par" type="number" value="72">
+</label>
+</div>
+
+<div id="holes"></div>
+
+<div class="total">
+Total
+<strong id="total">0</strong>
+<span id="relative">E</span>
+</div>
+
+<button class="primary" onclick="saveRound()">
+Save Round
+</button>
+
+</div>
+
+</section>
+
+<section id="calculator" class="page">
+
+<div class="card">
+
+<h2>Handicap Helper</h2>
+
+<p>Simple estimate — not an official handicap calculation.</p>
+
+<label>
+Score
+<input id="score" type="number" placeholder="92">
+</label>
+
+<label>
+Course Rating
+<input id="rating" type="number" value="72">
+</label>
+
+<label>
+Slope Rating
+<input id="slope" type="number" value="113">
+</label>
+
+<button class="primary" onclick="calculate()">
+Calculate
+</button>
+
+<div class="result" id="result">
+Enter your details.
+</div>
+
+</div>
+
+</section>
+
+<section id="stats" class="page">
+
+<div class="stats">
+
+<div class="stat">
+<span>Rounds</span>
+<strong id="rounds">0</strong>
+</div>
+
+<div class="stat">
+<span>Average</span>
+<strong id="average">—</strong>
+</div>
+
+<div class="stat">
+<span>Best</span>
+<strong id="best">—</strong>
+</div>
+
+<div class="stat">
+<span>Last</span>
+<strong id="last">—</strong>
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Recent Rounds</h2>
+
+<div id="roundList">
+No rounds saved yet.
+</div>
+
+</div>
+
+</section>
+
+<section id="deals" class="page">
+
+<div class="card">
+
+<h2>Golf Deals 🛒</h2>
+
+<p>
+This section can eventually make money through legitimate affiliate links.
+</p>
+
+<div class="deal">
+<strong>Golf Balls</strong>
+<a href="#">View Deals</a>
+</div>
+
+<div class="deal">
+<strong>Golf Gloves</strong>
+<a href="#">View Deals</a>
+</div>
+
+<div class="deal">
+<strong>Golf Clubs</strong>
+<a href="#">View Deals</a>
+</div>
+
+<div class="ad">
+ADVERTISEMENT PLACEHOLDER
+<br><br>
+Replace this with an approved advertising service when eligible.
+</div>
+
+</div>
+
+</section>
+
+<footer>
+Fairway Simple • Your scores are stored on this device.
+</footer>
+
+<script>
+
+let rounds =
+JSON.parse(localStorage.getItem("fairwayRounds") || "[]");
+
+const holes = document.getElementById("holes");
+
+for(let i=1;i<=18;i++){
+
+  holes.innerHTML += `
+    <div class="hole">
+      <span>Hole ${i}</span>
+      <input
+        class="holeScore"
+        type="number"
+        min="1"
+        max="20"
+        placeholder="—"
+        oninput="updateTotal()"
+      >
+    </div>
+  `;
+
+}
+
+function updateTotal(){
+
+  let scores =
+  [...document.querySelectorAll(".holeScore")];
+
+  let total =
+  scores.reduce((sum,input) =>
+  sum + (Number(input.value) || 0),0);
+
+  document.getElementById("total").textContent = total;
+
+  let par =
+  Number(document.getElementById("par").value) || 72;
+
+  let difference = total - par;
+
+  document.getElementById("relative").textContent =
+  total === 0 ? "E" :
+  difference === 0 ? "E" :
+  difference > 0 ? "+" + difference :
+  difference;
+
+}
+
+function saveRound(){
+
+  let score =
+  Number(document.getElementById("total").textContent);
+
+  if(score === 0){
+
+    alert("Enter your scores first.");
+
+    return;
+
+  }
+
+  let course =
+  document.getElementById("course").value ||
+  "My Round";
+
+  rounds.unshift({
+
+    course: course,
+
+    score: score,
+
+    date:
+    new Date().toLocaleDateString("en-AU")
+
+  });
+
+  rounds =
+  rounds.slice(0,50);
+
+  localStorage.setItem(
+    "fairwayRounds",
+    JSON.stringify(rounds)
+  );
+
+  alert("Round saved!");
+
+  updateStats();
+
+}
+
+function calculate(){
+
+  let score =
+  Number(document.getElementById("score").value);
+
+  let rating =
+  Number(document.getElementById("rating").value);
+
+  let slope =
+  Number(document.getElementById("slope").value);
+
+  if(!score || !rating || !slope){
+
+    document.getElementById("result").textContent =
+    "Enter all details.";
+
+    return;
+
+  }
+
+  let differential =
+  (score - rating) * 113 / slope;
+
+  document.getElementById("result").textContent =
+  "Estimated differential: " +
+  differential.toFixed(1);
+
+}
+
+function updateStats(){
+
+  document.getElementById("rounds").textContent =
+  rounds.length;
+
+  if(rounds.length === 0){
+
+    document.getElementById("average").textContent = "—";
+    document.getElementById("best").textContent = "—";
+    document.getElementById("last").textContent = "—";
+
+    return;
+
+  }
+
+  let scores =
+  rounds.map(r => r.score);
+
+  let average =
+  scores.reduce((a,b)=>a+b,0) /
+  scores.length;
+
+  document.getElementById("average").textContent =
+  average.toFixed(1);
+
+  document.getElementById("best").textContent =
+  Math.min(...scores);
+
+  document.getElementById("last").textContent =
+  scores[0];
+
+  document.getElementById("roundList").innerHTML =
+  rounds.slice(0,10).map(r => `
+    <div class="deal">
+      <span>
+        ${r.course}<br>
+        <small>${r.date}</small>
+      </span>
+      <strong>${r.score}</strong>
+    </div>
+  `).join("");
+
+}
+
+function showPage(page,button){
+
+  document
+  .querySelectorAll(".page")
+  .forEach(p =>
+  p.classList.remove("active"));
+
+  document
+  .querySelectorAll("nav button")
+  .forEach(b =>
+  b.classList.remove("active"));
+
+  document
+  .getElementById(page)
+  .classList.add("active");
+
+  button.classList.add("active");
+
+  if(page === "stats"){
+    updateStats();
+  }
+
+}
+
+updateStats();
+
+</script>
+
+</body>
+</html>
